@@ -75,4 +75,11 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = account_models.User
         fields = ("username", "password",)
-        
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = account_models.User
+        fields = ("pk", "username", "email", "gender", "phone_number", "age",)
