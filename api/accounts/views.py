@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from rest_framework import permissions, status
+from rest_framework import permissions, status, filters
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from commons import mixins as commons_mixins
 from accounts import models as account_models
 from accounts.serializers import ser as post_ser, get_ser
@@ -16,6 +17,11 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
     permission_classes = [permissions.AllowAny]
 
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ["username", "email", "is_deleted", "gender"]
+    search_fields = ['username', 'email']
+    ordering_fields = ["pk", "username", "email", "gender", "created_at", "is_deleted"]
+
     def get_queryset(self):
         return super().get_queryset()
 
@@ -30,7 +36,9 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
     def list(self, request):
 
-        user = self.get_queryset()
+        user = self.filter_queryset(self.get_queryset())
+
+        print(f"user : {user}")
 
         user_json = get_ser.UserViewSetSerializer(user, many=True)
 
