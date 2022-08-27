@@ -1,9 +1,11 @@
-import os
+import os, sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJ_DIR = BASE_DIR.parent
+
+sys.path.insert(0, os.path.join(PROJ_DIR, 'api'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -30,6 +32,8 @@ THIRD_PARTY_APPS = [
 
 PROJ_APPS = [
     "api",
+    "commons.apps.CommonsConfig",
+    "accounts.apps.AccountsConfig",
 ]
 
 REST_FRAMEWORK = {
@@ -188,3 +192,6 @@ LOGGING = {
 
 	},
 }
+
+
+AUTH_USER_MODEL = "accounts.User"
