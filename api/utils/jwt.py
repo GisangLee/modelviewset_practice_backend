@@ -46,6 +46,7 @@ def get_authorization_header(request):
 
 def get_system_key(request):
     system_key = request.META.get("HTTP_SYSTEM_KEY")
+    print(f"system_key: {system_key}")
     return system_key
 
 
@@ -102,11 +103,17 @@ class SystemKeyAuth(object):
     def authenticate(self, request):
         system_key = get_system_key(request)
 
-        if not system_key or system_key != os.environ.get("SYSTEM_KEY"):
+        if not system_key:
             raise exceptions.AuthenticationFailed("시스템키가 필요합니다.")
             #return (0, 0)
 
-        return (0, 0)
+        else:
+            system_key = system_key.split(" ")[-1].strip()
+
+            if system_key != os.environ.get("SYSTEM_KEY"):
+                raise exceptions.AuthenticationFailed("시스템키가 필요합니다.")
+
+            return (0, 0)
 
 
     def authenticate_header(self, request):

@@ -27,6 +27,8 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
     search_fields = ['username', 'email']
     ordering_fields = ["pk", "username", "email", "gender", "created_at", "is_deleted"]
 
+    authentication_classes = [SystemKeyAuth]
+
     def get_queryset(self):
         return super().get_queryset()
 
@@ -66,6 +68,20 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
             print(new_user.errors)
             return Response(Error.errors("에러"))
 
+
+    #TODO: 부분 수정 로직 작성
+    def partial_update(self, request, pk):
+        
+        user = self.get_detail_query(pk)
+
+        if user is None:
+
+            return Response(Error.errors("사용자를 찾을 수 없습니다"), status = status.HTTP_401_UNAUTHORIZED)
+
+        user_json = get_ser.UserViewSetSerializer(user, data = request.data, partial=True)
+
+        return Response(Success.response(self.__class__.__name__, request.method, "HI", "200"), status = status.HTTP_200_OK)
+
     def destroy(self, request, pk):
 
         user = account_models.User.objects.get(pk = pk)
@@ -86,7 +102,7 @@ class LoginView(APIView):
         user = self.serializer_classes(data = request.data)
         
         if user is None:
-            return Response(Success.response(self.__class__.__name__, request.method, "로그인 실패", "400"))
+            return Response(Error.errors("로그인 실패"), status = status.HTTP_400_BAD_REQUEST)
 
         user_data = user.initial_data
 
