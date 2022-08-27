@@ -103,8 +103,8 @@ class SystemKeyAuth(object):
         system_key = get_system_key(request)
 
         if not system_key or system_key != os.environ.get("SYSTEM_KEY"):
-            #raise exceptions.AuthenticationFailed("시스템키가 필요합니다.")
-            return (0, 0)
+            raise exceptions.AuthenticationFailed("시스템키가 필요합니다.")
+            #return (0, 0)
 
         return (0, 0)
 
