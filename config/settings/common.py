@@ -36,18 +36,6 @@ PROJ_APPS = [
     "accounts.apps.AccountsConfig",
 ]
 
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        'utils.jwt.CustomJwtTokenAuthentication',
-        'utils.jwt.SystemKeyAuth',
-    ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
-}
-
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

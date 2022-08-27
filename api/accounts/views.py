@@ -4,12 +4,13 @@ from rest_framework import permissions, status, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils.decorators import method_decorator
 from commons import mixins as commons_mixins
 from accounts import models as account_models
 from accounts.serializers import ser as post_ser, get_ser
 from api.utils.errors import Error
 from api.utils.success import Success
-from api.utils.perms import AllowAny
+from api.utils.perms import AllowAny, owner_only
 from api.utils.jwt import CustomJwtTokenAuthentication, SystemKeyAuth
 
 
@@ -19,13 +20,16 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
     queryset = account_models.User.objects.all()
 
-    serializer_class = post_ser.SignupSerializer
+    serializer_class = post_ser.UpdateUserSerializer
+    post_serializer_class = post_ser.SignupSerializer
     read_serializer_class = get_ser.UserViewSetSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["username", "email", "is_deleted", "gender"]
     search_fields = ['username', 'email']
     ordering_fields = ["pk", "username", "email", "gender", "created_at", "is_deleted"]
+
+    #authentication_classes = [SystemKeyAuth]
 
     def get_queryset(self):
         return super().get_queryset()
@@ -42,8 +46,8 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
     def list(self, request):
 
         user = self.filter_queryset(self.get_queryset())
+        user = list(user)
 
-        print(f"user : {user}")
         server_logger.debug({
             "message": user
         })
@@ -52,10 +56,20 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
         return Response({"message": user_json.data}, status = status.HTTP_200_OK)
 
+    @method_decorator(owner_only, name="dispatch")
+    def partial_update(self, request, *args, **kwargs):
+
+        return super().partial_update(request, *args, **kwargs)
+
+    @method_decorator(owner_only, name="dispatch")
+    def update(self, request, *args, **kwargs):
+
+        return super().update(request, *args, **kwargs)
+
 
     def create(self, request):
         
-        new_user = post_ser.SignupSerializer(data = request.data)
+        new_user = self.post_serializer_class(data = request.data)
 
         if new_user.is_valid():
             new_user.save()
@@ -68,7 +82,7 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
     def destroy(self, request, pk):
 
-        user = account_models.User.objects.get(pk = pk)
+        user = self.get_detail_query(pk)
 
         user.delete()
 
@@ -79,14 +93,14 @@ class LoginView(APIView):
 
     permission_classes = [AllowAny]
     serializer_classes = post_ser.LoginSerializer
-    authentication_classes = [SystemKeyAuth]
+    #authentication_classes = [SystemKeyAuth]
 
     def post(self, request):
 
         user = self.serializer_classes(data = request.data)
         
         if user is None:
-            return Response(Success.response(self.__class__.__name__, request.method, "로그인 실패", "400"))
+            return Response(Error.errors("로그인 실패"), status = status.HTTP_400_BAD_REQUEST)
 
         user_data = user.initial_data
 
