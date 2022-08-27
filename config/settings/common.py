@@ -39,8 +39,10 @@ PROJ_APPS = [
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny'
+
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        'utils.jwt.CustomJwtTokenAuthentication',
+        'utils.jwt.SystemKeyAuth',
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
@@ -196,3 +198,8 @@ LOGGING = {
 
 
 AUTH_USER_MODEL = "accounts.User"
+
+# Authentication Customizing
+AUTHENTICATION_BACKENDS = (
+    'accounts.auth.EmailUsernameLoginBackend',
+)

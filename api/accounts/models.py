@@ -59,3 +59,6 @@ class User(AbstractBaseUser):
     def has_perm(self, perm, obj=None):
         # return self.is_a
         return True
+
+    def __str__(self):
+        return self.username

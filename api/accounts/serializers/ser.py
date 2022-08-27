@@ -1,4 +1,8 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
+from utils.success import Success
+from utils.jwt import generate_jwt_token
 from accounts import models as account_models
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -37,3 +41,38 @@ class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = account_models.User
         fields = ("username", "email", "password", "gender", "age", "phone_number",)
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+
+        username = data.get("username")
+        password = data.get("username")
+
+        user = authenticate(username, password)
+
+        if user is None:
+            return None
+
+        payload = {
+            "user_id": user.id,
+        }
+
+        access_jwt = generate_jwt_token(payload, "access")
+        update_last_login(None, user)
+
+        response = {
+            "token": access_jwt,
+            "user_id": {
+                **user
+            },
+        }
+
+        return response
+
+    class Meta:
+        model = account_models.User
+        fields = ("username", "password",)
+        
