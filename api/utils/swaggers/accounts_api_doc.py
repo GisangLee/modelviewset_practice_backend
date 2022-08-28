@@ -22,7 +22,9 @@ base_api_param = [
     make_api_param("ordering", openapi.IN_QUERY, "pk, username, email, gender, created_at, is_deleted", openapi.TYPE_STRING),
 ]
 
-login = base_api_param + [
+auth_api_param = [
     make_api_param("system_key", openapi.IN_HEADER, "시스템 key", openapi.FORMAT_INT64, default=f"key {os.environ.get('SECRET_KEY')}"),
     make_api_param("Authorization", openapi.IN_HEADER, "jwt", openapi.TYPE_STRING),
 ]
+
+login = base_api_param + auth_api_param
