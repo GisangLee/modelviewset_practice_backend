@@ -58,17 +58,19 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
         return Response({"message": user_json.data}, status = status.HTTP_200_OK)
 
+    @swagger_auto_schema(manual_parameters=accounts_api_doc.auth_api_param, tags = ["사용자 정보 부분 수정"], operation_description="성공 200")
     @method_decorator(owner_only, name="dispatch")
     def partial_update(self, request, *args, **kwargs):
 
         return super().partial_update(request, *args, **kwargs)
 
+    @swagger_auto_schema(manual_parameters=accounts_api_doc.auth_api_param, tags = ["사용자 정보 전부 수정"], operation_description="성공 200")
     @method_decorator(owner_only, name="dispatch")
     def update(self, request, *args, **kwargs):
 
         return super().update(request, *args, **kwargs)
 
-
+    @swagger_auto_schema(manual_parameters=accounts_api_doc.auth_api_param, tags = ["회원가입"], operation_description="성공 201, 에러 400")
     def create(self, request):
         
         new_user = self.post_serializer_class(data = request.data)
@@ -82,6 +84,7 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
             print(new_user.errors)
             return Response(Error.errors("에러"), status = status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(manual_parameters=accounts_api_doc.auth_api_param, tags = ["데이터 물리 / 논리 삭제"], operation_description="성공 200")
     def destroy(self, request, pk):
 
         user = self.get_detail_query(pk)
