@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from commons import mixins as commons_mixins
 from accounts import models as account_models
 from accounts.serializers import ser as post_ser, get_ser
@@ -12,7 +13,7 @@ from api.utils.errors import Error
 from api.utils.success import Success
 from api.utils.perms import AllowAny, owner_only
 from api.utils.jwt import CustomJwtTokenAuthentication, SystemKeyAuth
-
+from api.utils.swaggers import accounts_api_doc
 
 server_logger = log.getLogger("django.request")
 
@@ -25,7 +26,7 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
     read_serializer_class = get_ser.UserViewSetSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["username", "email", "is_deleted", "gender"]
+    filterset_fields = ["username", "email", "gender"]
     search_fields = ['username', 'email']
     ordering_fields = ["pk", "username", "email", "gender", "created_at", "is_deleted"]
 
@@ -43,6 +44,7 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
         except account_models.User.DoesNotExist:
             return None
 
+    @swagger_auto_schema(manual_parameters=accounts_api_doc.login, tags = ["로그인"], operation_description="성공 200, 데이터 없을 시 빈 리스트")
     def list(self, request):
 
         user = self.filter_queryset(self.get_queryset())
