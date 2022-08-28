@@ -44,7 +44,7 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
         except account_models.User.DoesNotExist:
             return None
 
-    @swagger_auto_schema(manual_parameters=accounts_api_doc.login, tags = ["로그인"], operation_description="성공 200, 데이터 없을 시 빈 리스트")
+    @swagger_auto_schema(manual_parameters=accounts_api_doc.login, tags = ["사용자 조회"], operation_description="성공 200, 데이터 없을 시 빈 리스트")
     def list(self, request):
 
         user = self.filter_queryset(self.get_queryset())
