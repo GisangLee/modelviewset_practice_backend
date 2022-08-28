@@ -20,7 +20,6 @@ ALLOWED_HOSTS = []
 
 STATICFILES_DIRS = [os.path.join(PROJ_DIR, "static")]
 
-
 INTERNAL_IPS = [
     # ...
     "127.0.0.1",
