@@ -5,13 +5,12 @@ from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from api.accounts import views as account_views
 
-
 routers = DefaultRouter()
 
-routers.register(r"accounts", account_views.UserViewSet)
+routers.register(r"", account_views.UserViewSet, basename="accounts")
 
 urlpatterns = [
-    path(r"api-v1/", include(routers.urls)),
+    path(r"api-v1/accounts/", include(routers.urls)),
     path(r"api-v1/accounts/login", account_views.LoginView.as_view()),
     path('__debug__/', include('debug_toolbar.urls')),
 ]

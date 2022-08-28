@@ -78,7 +78,7 @@ class UserViewSet(commons_mixins.BaseViewsetMixin):
 
         else:
             print(new_user.errors)
-            return Response(Error.errors("에러"))
+            return Response(Error.errors("에러"), status = status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk):
 

@@ -27,11 +27,11 @@ class SignupSerializer(serializers.ModelSerializer):
         
         new_user = account_models.User.objects.create(username=validated_data["username"], email=validated_data["password"])
 
-        new_user.set_password(validated_data["password"])
+        new_user.set_password(validated_data.get("password"))
 
-        new_user.gender = validated_data["gender"]
-        new_user.age = validated_data["age"]
-        new_user.phone_number = validated_data["phone_number"]
+        new_user.gender = validated_data.get("gender")
+        new_user.age = validated_data.get("age")
+        new_user.phone_number = validated_data.get("phone_number")
 
         new_user.save()
 
